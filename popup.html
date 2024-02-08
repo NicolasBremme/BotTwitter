@@ -1,0 +1,272 @@
+<html style="width: 300px; height: 1px;">
+
+<head>
+    <script src="popup.js"></script>
+    <script src="full/js/popup.js"></script>
+    <script src="lite/js/popup.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" data-auto-replace-svg="nest"></script>
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/popup.css">
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <!-- HIDDEN USER ID -->
+    <div style="display: none;">
+        <input id="CurrentUserId" type="number" value=0>
+    </div>
+    <!-- POPUP STATS GATHERING -->
+    <div id="stats-gathering" class="container" style="display: none;">
+        <div class="row" style="text-align: center;">
+            <p style="margin-top: 20px">Gathering data ...</p>
+        </div>
+    </div>
+    <!-- POPUP STOP SCRIPT -->
+    <div id="stop-script" class="container" style="display: none; text-align: center;">
+        <h2 id="title">RUNNING...</h2>
+        <div class="row">
+            <button name="stop-btn">Stop</button>
+        </div>
+    </div>
+    <!-- POPUP WRONG ACCOUNT -->
+    <div id="wrong-account" class="container" style="display: none; text-align: center;">
+        <h2 id="title">ERROR</h2>
+        <div class="row">
+            <p>You're either not connected on Twitter or you're not on the valid account.</p>
+            <p>Please connect to your valid account and then open this popup once again.</p>
+            <button name="logout-btn" style="width: 48% !important; padding: 0 !important;">Logout</button>
+        </div>
+    </div>
+    <!-- POPUP ENTER ACCOUNT -->
+    <div id="enter-account" class="container" style="display: none; text-align: center;">
+        <h2 id="title">ACCOUNT</h2>
+        <div class="row">
+            <p id="askUsername" style="display: block;">Please enter your Twitter username</p>
+            <p id="forceAskUsername" style="display: none; color: rgb(255, 95, 95);">Your username is mandatory</p>
+            <input class="ignore" id="account" type="text" style=""></input>
+        </div>
+        <div class="row">
+            <button id="confirm-account" style="background-color: #00a708; color: white;">CONFIRM</button>
+        </div>
+    </div>
+    <!-- POPUP LOADING -->
+    <div id="loading" class="container" style="display: block">
+        <div class="row" style="text-align: center;">
+            <p style="margin-top: 20px">LOADING ...</p>
+        </div>
+    </div>
+    <!-- POPUP CONNECT -->
+    <div id="connect" class="container" style="display: none; text-align: center;">
+        <h2 id="title">LOGIN PAGE</h2>
+        <div class="row">
+            <p>EMAIL</p>
+            <input id="username" type="text"></input>
+        </div>
+        <div class="row">
+            <p>PASSWORD</p>
+            <input id="password" type="password"></input>
+        </div>
+        <div id="login-block" style="display: block;">
+            <div class="row">
+                <button id="login" style="background-color: #00a708; color: white">LOG IN</button>
+            </div>
+            <div class="row">
+                <button id="redirect-sign">CREATE AN ACCOUNT</button>
+            </div>
+        </div>
+        <div id="sign-block" style="display: none;">
+            <div class="row">
+                <p>TWITTER USERNAME</p>
+                <input id="account" type="text"></input>
+            </div>
+            <div class="row">
+                <button id="sign" style="background-color: #00a708; color: white">SIGN</button>
+            </div>
+            <div class="row">
+                <button id="redirect-login">GO TO LOG IN</button>
+            </div>
+        </div>
+    </div>
+    <!-- POPUP LITE -->
+    <div id="lite" class="container" style="display: none">
+        <div class="row">
+            <button name="script" action="follow_lite" style="width: 58%"> FOLLOW </button>
+            <button name="settings" action="follow" style="width: 38%; float: right;">
+                <i style="pointer-events: none;" class="fas fa-cog"></i>
+            </button>
+        </div>
+        <div style="height: 5px; display: block;"></div>
+        <div class="row">
+            <button name="script" action="unfollow_lite" style="width: 58%"> UNFOLLOW </button>
+            <button name="settings" action="unfollow" style="width: 38%; float: right;">
+                <i style="pointer-events: none;" class="fas fa-cog"></i>
+            </button>
+        </div>
+        <div style="height: 5px; display: block;"></div>
+        <div class="row">
+            <button class="ignore" name="btn-stat" style="padding-left: 20%;"> VIEW STATS&nbsp;&nbsp;&nbsp;<i class="fas fa-chart-bar" style="vertical-align: middle;"></i></button>
+        </div>
+        <div id="settingsFollow" style="display: block;">
+            Follows per day :
+            <div class="row" style="display: flex;">
+                <input id="follow-lite" type="number" value=100 style="width: 75px; background-color: lightgrey;"
+                    disabled></input>
+                <div style="width: 50%; margin-left: 30px;">
+                    <i class="fas fa-lock"></i>
+                    &nbsp;Upgrade to get
+                    <p>more actions</p>
+                </div>
+            </div>
+            Follows per cycle :
+            <div class="row">
+                <input name="onchange" id="follow1" type="number" value=10 min=1 max=99></input> -
+                <input name="onchange" id="follow2" type="number" value=20 min=1 max=99></input>
+            </div>
+            Sleep time between cycle :
+            <div class="row">
+                <input name="onchange" id="sleep1" type="number" value=55 min=1 max=99></input> min -
+                <input name="onchange" id="sleep2" type="number" value=65 min=1 max=99></input> min
+            </div>
+            Like on most followed user :
+            <div class="row">
+                <input id="likeOnMostFollowed" name="onchange" type="number" value=3 min=1 max=9></input>
+                <label class="checkboxContainer margin-left-30" style="display: inline;">Don't
+                    <input id="/likeOnMostFollowed" name="no-limit" type="checkbox" />
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            <input id="username" class="not-recover" type="hidden" value="@"></input>
+        </div>
+        <div id="settingsUnfollow" style="display: none;">
+            Unfollows per day :
+            <div class="row" style="display: flex;">
+                <input id="unfollow-lite" type="number" value=100 style="width: 75px; background-color: lightgrey;"
+                    disabled></input>
+                <div style="width: 50%; margin-left: 30px;">
+                    <i class="fas fa-lock"></i>
+                    &nbsp;Upgrade to get
+                    <p>more actions</p>
+                </div>
+            </div>
+            Unfollow per cycle :
+            <div class="row">
+                <input id="unfollowPerCycle" name="onchange" type="number" value=4 min=1 max=99></input>
+                <label class="checkboxContainer margin-left-30" style="display: inline;">Mass unfollow
+                    <input id="/unfollowPerCycle" name="no-limit" type="checkbox" />
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            Sleep time between cycle :
+            <div class="row">
+                <input name="onchange" id="sleep3" type="number" value=3 min=1 max=99></input> min -
+                <input name="onchange" id="sleep4" type="number" value=5 min=1 max=99></input> min
+            </div>
+            <div class="row">
+                <label class="checkboxContainer">Unfollow people who follows you
+                    <input name="forceUnfollow" type="checkbox"></input>
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            <div class="row">
+                <label class="checkboxContainer">Smart unfollow (only for the follow script)
+                    <input name="smartUnfollow" type="checkbox"></input>
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            <span name="daysUnfollow" style="display: none;">Days Before unfollow :</span>
+            <div name="daysUnfollow" class="row" style="display: none;">
+                <input name="onchange" type="number" value=3 min=1 max=9></input>
+            </div>
+        </div>
+        <button name="logout-btn" style="width: 48% !important; padding: 0 !important;">Logout</button>
+        <button id="subscribe-btn" style="float:right; width: 48% !important; padding: 0 !important;">UPGRADE</button>
+    </div>
+    <!-- POPUP FULL -->
+    <div id="full" class="container" style="display: none">
+        <div class="row">
+            <button name="script" action="follow_full" style="width: 58%"> FOLLOW </button>
+            <button name="settings" action="follow" style="width: 38%; float: right;">
+                <i style="pointer-events: none;" class="fas fa-cog"></i>
+            </button>
+        </div>
+        <div style="height: 5px; display: block;"></div>
+        <div class="row">
+            <button name="script" action="unfollow_full" style="width: 58%"> UNFOLLOW </button>
+            <button name="settings" action="unfollow" style="width: 38%; float: right;">
+                <i style="pointer-events: none;" class="fas fa-cog"></i>
+            </button>
+        </div>
+        <div style="height: 5px; display: block;"></div>
+        <div class="row">
+            <button class="ignore" name="btn-stat" style="padding-left: 20%;"> VIEW STATS&nbsp;&nbsp;&nbsp;<i class="fas fa-chart-bar" style="vertical-align: middle;"></i></button>
+        </div>
+        <div id="settingsFollow" style="display: block;">
+            Follows per day :
+            <div class="row">
+                <input id="slider1" name="onchange" type="range" value=390 min=1 max=1000></input>
+                <input id="slider1Display" name="onchange" class="ignore" type="number" value=390 min=1 max=1000
+                    style="width: 75px;"></input>
+            </div>
+            Follows per cycle :
+            <div class="row">
+                <input name="onchange" id="follow1" type="number" value=50 min=1 max=999></input> -
+                <input name="onchange" id="follow2" type="number" value=70 min=1 max=999></input>
+            </div>
+            Sleep time between cycle :
+            <div class="row">
+                <input name="onchange" id="sleep1" type="number" value=55 min=1 max=99></input> min -
+                <input name="onchange" id="sleep2" type="number" value=65 min=1 max=99></input> min
+            </div>
+            Like on most followed user :
+            <div class="row">
+                <input id="likeOnMostFollowed" name="onchange" type="number" value=3 min=1 max=9></input>
+                <label class="checkboxContainer margin-left-30" style="display: inline;">Don't
+                    <input id="/likeOnMostFollowed" name="no-limit" type="checkbox" />
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            <input id="username" class="not-recover" type="hidden" value="@"></input>
+        </div>
+        <div id="settingsUnfollow" style="display: none;">
+            Unfollows per day :
+            <div class="row">
+                <input id="slider2" name="onchange" type="range" value=390 min=1 max=1000></input>
+                <input id="slider2Display" name="onchange" class="ignore" type="number" value=390 min=1 max=1000
+                    style="width: 75px;"></input>
+            </div>
+            Unfollow per cycle :
+            <div class="row">
+                <input id="unfollowPerCycle" name="onchange" type="number" value=4 min=1 max=99></input>
+                <label class="checkboxContainer margin-left-30" style="display: inline;">Mass unfollow
+                    <input id="/unfollowPerCycle" name="no-limit" type="checkbox" />
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            Sleep time between cycle :
+            <div class="row">
+                <input name="onchange" id="sleep3" type="number" value=3 min=1 max=99></input> min -
+                <input name="onchange" id="sleep4" type="number" value=5 min=1 max=99></input> min
+            </div>
+            <div class="row">
+                <label class="checkboxContainer">Unfollow people who follows you
+                    <input name="forceUnfollow" type="checkbox"></input>
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            <div class="row">
+                <label class="checkboxContainer">Smart unfollow (only for the follow script)
+                    <input name="smartUnfollow" type="checkbox"></input>
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+            <span name="daysUnfollow" style="display: none;">Days Before unfollow :</span>
+            <div name="daysUnfollow" class="row" style="display: none;">
+                <input name="onchange" type="number" value=3 min=1 max=9></input>
+            </div>
+        </div>
+        <button name="logout-btn">Logout</button>
+    </div>
+</body>
+
+</html>
